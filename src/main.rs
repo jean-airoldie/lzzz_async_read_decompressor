@@ -1,10 +1,10 @@
 use {futures_lite::*, lzzzz::lz4f, piper::pipe, smol::Task};
 
-const FRAME_SIZE: usize = 1024;
+const FRAME_SIZE: usize = 8192;
 
 fn main() {
     smol::run(async {
-        let (reader, writer) = pipe(FRAME_SIZE / 256);
+        let (reader, writer) = pipe(53);
 
         let frame = vec![1u8; FRAME_SIZE];
 
