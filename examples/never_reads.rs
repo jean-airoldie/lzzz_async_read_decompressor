@@ -42,17 +42,14 @@ fn main() {
             lz4f::AsyncWriteCompressor::new(writer, lz4f::Preferences::default()).unwrap();
 
         println!("writing {} bytes", FRAME.len());
-
         writer.write_all(FRAME.as_ref()).await.unwrap();
         writer.flush().await.unwrap();
 
         // Signal EOF for the writer.
         drop(writer);
-
         println!("done writing");
 
         task.await;
-
         println!("done reading");
     })
 }
