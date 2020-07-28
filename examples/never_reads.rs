@@ -24,13 +24,25 @@ fn main() {
 
         let task = Task::spawn(async move {
             let mut reader = lz4f::AsyncReadDecompressor::new(reader).unwrap();
-            let mut buf = vec![];
-            reader.read_to_end(&mut buf).await.unwrap();
-            assert_eq!(buf, *FRAME);
+            let mut total = vec![];
+            let mut buf = vec![0u8; FRAME_SIZE / 4];
+
+            loop {
+                let bytes_read = reader.read(&mut buf).await.unwrap();
+                if bytes_read == 0 {
+                    break;
+                }
+                println!("read {} bytes", bytes_read);
+                total.extend_from_slice(&buf[..bytes_read]);
+            }
+            assert_eq!(total, *FRAME);
         });
 
         let mut writer =
             lz4f::AsyncWriteCompressor::new(writer, lz4f::Preferences::default()).unwrap();
+
+        println!("writing {} bytes", FRAME.len());
+
         writer.write_all(FRAME.as_ref()).await.unwrap();
         writer.flush().await.unwrap();
 
