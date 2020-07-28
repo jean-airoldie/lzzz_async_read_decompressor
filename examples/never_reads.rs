@@ -19,7 +19,8 @@ lazy_static! {
 
 fn main() {
     smol::run(async {
-        let (reader, writer) = pipe(100);
+        // Choose a size that is smaller than the compressed stream.
+        let (reader, writer) = pipe(FRAME_SIZE / 4);
 
         let task = Task::spawn(async move {
             let mut reader = lz4f::AsyncReadDecompressor::new(reader).unwrap();
@@ -36,6 +37,10 @@ fn main() {
         // Signal EOF for the writer.
         drop(writer);
 
+        println!("done writing");
+
         task.await;
+
+        println!("done reading");
     })
 }
