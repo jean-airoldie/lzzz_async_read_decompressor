@@ -19,7 +19,7 @@ lazy_static! {
 
 fn main() {
     smol::run(async {
-        let (reader, writer) = pipe(54);
+        let (reader, writer) = pipe(100);
 
         let task = Task::spawn(async move {
             let mut reader = lz4f::AsyncReadDecompressor::new(reader).unwrap();
